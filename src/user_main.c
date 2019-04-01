@@ -1,56 +1,63 @@
-#ifndef __CONFIGURATION_H__
-#define __CONFIGURATION_H__
+#include "esp_common.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include <lwip/api.h>
+#include "gpio.h"
+#include "uart.h"
 
-// #define ARDUINO_OTA
-#ifndef PROGMEM
-#define PROGMEM ICACHE_RODATA_ATTR
-#endif
-const char string_0[] PROGMEM = "\nDemo program, (c)Risapav 2019\n";
-const char string_1[] PROGMEM = "\nSDK version:%s\n";
-const char string_2[] PROGMEM = "\nESP8266 chip ID:0x%x\n";
-const char string_3[] PROGMEM = "String 3";
-const char string_4[] PROGMEM = "String 4";
-const char string_5[] PROGMEM = "String 5";
 
-// Then set up a table to refer to your strings.
-const char *const string_table[] PROGMEM = {string_0, string_1, string_2,
-                                            string_3, string_4, string_5};
 
-#endif
-A : rf cal *B : rf init data *C
-                : sdk parameters *Parameters
-                  : none *Returns
-                    : rf cal sector ********************************************
-                          *********************************** /
-                      uint32 user_rf_cal_sector_set(void) {
-  flash_size_map size_map = system_get_flash_size_map();
-  uint32 rf_cal_sec = 0;
-  switch (size_map) {
-  case FLASH_SIZE_4M_MAP_256_256:
-    rf_cal_sec = 128 - 5;
-    break;
+#include "configuration.h"
 
-  case FLASH_SIZE_8M_MAP_512_512:
-    rf_cal_sec = 256 - 5;
-    break;
+/******************************************************************************
+ * FunctionName : user_rf_cal_sector_set
+ * Description  : SDK just reversed 4 sectors, used for rf init data and paramters.
+ *                We add this function to force users to set rf cal sector, since
+ *                we don't know which sector is free in user's application.
+ *                sector map for last several sectors : ABCCC
+ *                A : rf cal
+ *                B : rf init data
+ *                C : sdk parameters
+ * Parameters   : none
+ * Returns      : rf cal sector
+*******************************************************************************/
+uint32 user_rf_cal_sector_set(void)
+{
+    flash_size_map size_map = system_get_flash_size_map();
+    uint32 rf_cal_sec = 0;
 
-  case FLASH_SIZE_16M_MAP_512_512:
-  case FLASH_SIZE_16M_MAP_1024_1024:
-    rf_cal_sec = 512 - 5;
-    break;
+    switch (size_map) {
+        case FLASH_SIZE_4M_MAP_256_256:
+            rf_cal_sec = 128 - 5;
+            break;
 
-  case FLASH_SIZE_32M_MAP_512_512:
-  case FLASH_SIZE_32M_MAP_1024_1024:
-    rf_cal_sec = 1024 - 5;
-    break;
+        case FLASH_SIZE_8M_MAP_512_512:
+            rf_cal_sec = 256 - 5;
+            break;
 
-  default:
-    rf_cal_sec = 0;
-    break;
-  }
+        case FLASH_SIZE_16M_MAP_512_512:
+        case FLASH_SIZE_16M_MAP_1024_1024:
+            rf_cal_sec = 512 - 5;
+            break;
 
-  return rf_cal_sec;
+        case FLASH_SIZE_32M_MAP_512_512:
+        case FLASH_SIZE_32M_MAP_1024_1024:
+            rf_cal_sec = 1024 - 5;
+            break;
+        case FLASH_SIZE_64M_MAP_1024_1024:
+            rf_cal_sec = 2048 - 5;
+            break;
+        case FLASH_SIZE_128M_MAP_1024_1024:
+            rf_cal_sec = 4096 - 5;
+            break;
+        default:
+            rf_cal_sec = 0;
+            break;
+    }
+
+    return rf_cal_sec;
 }
+
 
 void task_blink(void *ignore) {
   gpio16_output_conf();
@@ -137,24 +144,6 @@ void httpd_task(void *pvParameters) {
   }
 }
 
-/**********************************OUR CODE*************************************
- *How to Use this RTOS SDK example
- uart_init_new(); Initalizes UART0 & UART1 of ESP8266 (You can change the Baud
- rates & Structure of the UART frame here)
- ***UART1 only has a single Tx Pin. There is no Receiver at UART1
- uart0_tx_buffer(str pointer, length); Sends the Data if the UART Ports are
- Initialized
- Changes made in the Library : Changed the Interrupt Handler Function :
- uart0_rx_intr_handler for Receiving Data in data buffer
- ******************************************************************************/
-/*
-void uart0_tx_buffer(char *string, char len) {
-  while (len > 0) {
-    uart0_write_char(*string++);
-    len--;
-  }
-}
-*/
 /******************************************************************************
  * FunctionName : user_init
  * Description  : entry of user application, init user function here
@@ -163,7 +152,7 @@ void uart0_tx_buffer(char *string, char len) {
 *******************************************************************************/
 void user_init(void) {
   UART_ConfigTypeDef uart_config;
-  uart_config.baud_rate = BIT_RATE_115200;
+  uart_config.baud_rate = BIT_RATE_19200;//BIT_RATE_115200;
   uart_config.data_bits = UART_WordLength_8b;
   uart_config.parity = USART_Parity_None;
   uart_config.stop_bits = USART_StopBits_1;
@@ -173,11 +162,9 @@ void user_init(void) {
   UART_ParamConfig(UART0, &uart_config);
 
   UART_SetPrintPort(UART0); // select UART0
-
-  printf(string_0, system_get_sdk_version());
-  printf(string_1, system_get_chip_id());
+printf(string_0);
+  printf(string_1, system_get_sdk_version());
+  printf(string_2, system_get_chip_id());
   xTaskCreate(&task_blink, (signed char *)"startup", 2048, NULL, 1, NULL);
   xTaskCreate(&httpd_task, (signed char *)"http_server", 1024, NULL, 2, NULL);
-}
-ULL, 2, NULL);
 }
