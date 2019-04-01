@@ -1,0 +1,10 @@
+.pio
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
+node_modules
+package-lock.json
+public/*
+/nbproject/private/
+nbproject/
