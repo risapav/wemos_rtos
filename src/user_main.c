@@ -60,12 +60,18 @@ uint32 user_rf_cal_sector_set(void)
 
 
 void task_blink(void *ignore) {
-  gpio16_output_conf();
+  GPIO_OUTPUT(14, 0);
+
+//  gpio16_output_conf();
   while (true) {
-    gpio16_output_set(0);
-    vTaskDelay(1000 / portTICK_RATE_MS);
-    gpio16_output_set(1);
-    vTaskDelay(1000 / portTICK_RATE_MS);
+    GPIO_OUTPUT_SET(14, 1);
+    printf("\nblink %d", 0);
+//    gpio16_output_set(0);
+    vTaskDelay(500 / portTICK_RATE_MS);
+//    gpio16_output_set(1);
+    GPIO_OUTPUT_SET(14, 0);
+//    printf("\nblink %d", 1);
+    vTaskDelay(500 / portTICK_RATE_MS);
   }
 
   vTaskDelete(NULL);
@@ -152,7 +158,7 @@ void httpd_task(void *pvParameters) {
 *******************************************************************************/
 void user_init(void) {
   UART_ConfigTypeDef uart_config;
-  uart_config.baud_rate = BIT_RATE_19200;//BIT_RATE_115200;
+  uart_config.baud_rate = BIT_RATE_74880;//BIT_RATE_19200;//BIT_RATE_115200;
   uart_config.data_bits = UART_WordLength_8b;
   uart_config.parity = USART_Parity_None;
   uart_config.stop_bits = USART_StopBits_1;
@@ -165,6 +171,7 @@ void user_init(void) {
 printf(string_0);
   printf(string_1, system_get_sdk_version());
   printf(string_2, system_get_chip_id());
+  printf("\nflash map: %d\n", user_rf_cal_sector_set());
   xTaskCreate(&task_blink, (signed char *)"startup", 2048, NULL, 1, NULL);
   xTaskCreate(&httpd_task, (signed char *)"http_server", 1024, NULL, 2, NULL);
 }
