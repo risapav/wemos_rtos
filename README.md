@@ -4,9 +4,12 @@ some tests provided on WEMOS HW with esp8266-rtos-sdk framework using ATOM Platf
 ## Použitá literatúra
  - https://circuits4you.com/2018/02/03/esp8266-nodemcu-adc-analog-value-on-dial-gauge/
  - https://github.com/tttapa/ESP8266
- 
+
 ## Schema dosky
  - https://robotdyn.ru/upload/PHOTO/0G-00005302==MEGA+WiFi-R3-AT2560-ESP8266-8MB-CH340G/DOCS/Schematic==0G-00005302==MEGA+WiFi-R3-AT2560-ESP8266-8MB-CH340G.pdf
+
+## SW podpora v7robcu chipu esp8266
+ - https://github.com/espressif
 
 ## Nastavenie dosky WeMOS Mega
 

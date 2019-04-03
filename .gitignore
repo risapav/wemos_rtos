@@ -8,3 +8,4 @@ package-lock.json
 public/*
 /nbproject/private/
 nbproject/
+.vscode
