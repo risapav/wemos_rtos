@@ -8,7 +8,7 @@ some tests provided on WEMOS HW with esp8266-rtos-sdk framework using ATOM Platf
 ## Schema dosky
  - https://robotdyn.ru/upload/PHOTO/0G-00005302==MEGA+WiFi-R3-AT2560-ESP8266-8MB-CH340G/DOCS/Schematic==0G-00005302==MEGA+WiFi-R3-AT2560-ESP8266-8MB-CH340G.pdf
 
-## SW podpora v7robcu chipu esp8266
+## SW podpora výrobcu chipu esp8266
  - https://github.com/espressif
 
 ## Nastavenie dosky WeMOS Mega
