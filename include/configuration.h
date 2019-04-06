@@ -13,7 +13,6 @@ const char string_4[] PROGMEM = "String 4";
 const char string_5[] PROGMEM = "String 5";
 
 // Then set up a table to refer to your strings.
-const char *const string_table[] PROGMEM = {string_0, string_1, string_2,
-                                            string_3, string_4, string_5};
+const char *const string_table[] PROGMEM = {string_0, string_1, string_2, string_3, string_4, string_5};
 
 #endif

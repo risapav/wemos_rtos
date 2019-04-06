@@ -5,8 +5,6 @@
 #include "gpio.h"
 #include "uart.h"
 
-
-
 #include "configuration.h"
 
 /******************************************************************************
@@ -23,64 +21,68 @@
 *******************************************************************************/
 uint32 user_rf_cal_sector_set(void)
 {
-    flash_size_map size_map = system_get_flash_size_map();
-    uint32 rf_cal_sec = 0;
+  flash_size_map size_map = system_get_flash_size_map();
+  uint32 rf_cal_sec = 0;
 
-    switch (size_map) {
-        case FLASH_SIZE_4M_MAP_256_256:
-            rf_cal_sec = 128 - 5;
-            break;
+  switch (size_map)
+  {
+  case FLASH_SIZE_4M_MAP_256_256:
+    rf_cal_sec = 128 - 5;
+    break;
 
-        case FLASH_SIZE_8M_MAP_512_512:
-            rf_cal_sec = 256 - 5;
-            break;
+  case FLASH_SIZE_8M_MAP_512_512:
+    rf_cal_sec = 256 - 5;
+    break;
 
-        case FLASH_SIZE_16M_MAP_512_512:
-        case FLASH_SIZE_16M_MAP_1024_1024:
-            rf_cal_sec = 512 - 5;
-            break;
+  case FLASH_SIZE_16M_MAP_512_512:
+  case FLASH_SIZE_16M_MAP_1024_1024:
+    rf_cal_sec = 512 - 5;
+    break;
 
-        case FLASH_SIZE_32M_MAP_512_512:
-        case FLASH_SIZE_32M_MAP_1024_1024:
-            rf_cal_sec = 1024 - 5;
-            break;
-        case FLASH_SIZE_64M_MAP_1024_1024:
-            rf_cal_sec = 2048 - 5;
-            break;
-        case FLASH_SIZE_128M_MAP_1024_1024:
-            rf_cal_sec = 4096 - 5;
-            break;
-        default:
-            rf_cal_sec = 0;
-            break;
-    }
+  case FLASH_SIZE_32M_MAP_512_512:
+  case FLASH_SIZE_32M_MAP_1024_1024:
+    rf_cal_sec = 1024 - 5;
+    break;
+  case FLASH_SIZE_64M_MAP_1024_1024:
+    rf_cal_sec = 2048 - 5;
+    break;
+  case FLASH_SIZE_128M_MAP_1024_1024:
+    rf_cal_sec = 4096 - 5;
+    break;
+  default:
+    rf_cal_sec = 0;
+    break;
+  }
 
-    return rf_cal_sec;
+  return rf_cal_sec;
 }
 
-
-void task_blink(void *ignore) {
+void task_blink(void *ignore)
+{
   GPIO_OUTPUT(14, 0);
 
-//  gpio16_output_conf();
-  while (true) {
+  //  gpio16_output_conf();
+  while (true)
+  {
     GPIO_OUTPUT_SET(14, 1);
     printf("\nblink %d", 0);
-//    gpio16_output_set(0);
+    //    gpio16_output_set(0);
     vTaskDelay(500 / portTICK_RATE_MS);
-//    gpio16_output_set(1);
+    //    gpio16_output_set(1);
     GPIO_OUTPUT_SET(14, 0);
-//    printf("\nblink %d", 1);
+    //    printf("\nblink %d", 1);
     vTaskDelay(500 / portTICK_RATE_MS);
   }
 
   vTaskDelete(NULL);
 }
 
-void httpd_task(void *pvParameters) {
+void httpd_task(void *pvParameters)
+{
   struct netconn *client = NULL;
   struct netconn *nc = netconn_new(NETCONN_TCP);
-  if (nc == NULL) {
+  if (nc == NULL)
+  {
     printf("Failed to allocate socket.\n");
     vTaskDelete(NULL);
   }
@@ -110,16 +112,20 @@ void httpd_task(void *pvParameters) {
   /* disable LED */
   GPIO_OUTPUT(2, 0);
   GPIO_OUTPUT_SET(2, 1);
-  while (1) {
+  while (1)
+  {
     err_t err = netconn_accept(nc, &client);
-    if (err == ERR_OK) {
+    if (err == ERR_OK)
+    {
       struct netbuf *nb;
-      if ((err = netconn_recv(client, &nb)) == ERR_OK) {
+      if ((err = netconn_recv(client, &nb)) == ERR_OK)
+      {
         void *data;
         u16_t len;
         netbuf_data(nb, &data, &len);
         /* check for a GET request */
-        if (!strncmp(data, "GET ", 4)) {
+        if (!strncmp(data, "GET ", 4))
+        {
           char uri[16];
           const int max_uri_len = 16;
           char *sp1, *sp2;
@@ -156,9 +162,10 @@ void httpd_task(void *pvParameters) {
  * Parameters   : none
  * Returns      : none
 *******************************************************************************/
-void user_init(void) {
+void user_init(void)
+{
   UART_ConfigTypeDef uart_config;
-  uart_config.baud_rate = BIT_RATE_74880;//BIT_RATE_19200;//BIT_RATE_115200;
+  uart_config.baud_rate = BIT_RATE_74880; //BIT_RATE_19200;//BIT_RATE_115200;
   uart_config.data_bits = UART_WordLength_8b;
   uart_config.parity = USART_Parity_None;
   uart_config.stop_bits = USART_StopBits_1;
@@ -168,7 +175,7 @@ void user_init(void) {
   UART_ParamConfig(UART0, &uart_config);
 
   UART_SetPrintPort(UART0); // select UART0
-printf(string_0);
+  printf(string_0);
   printf(string_1, system_get_sdk_version());
   printf(string_2, system_get_chip_id());
   printf("\nflash map: %d\n", user_rf_cal_sector_set());
