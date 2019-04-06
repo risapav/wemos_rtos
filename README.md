@@ -10,7 +10,7 @@ some tests provided on WEMOS HW with esp8266-rtos-sdk framework using ATOM Platf
 
 ## Nastavenie dosky WeMOS Mega
 
-- nastavenie komunikácie medzi jednotlivými časťami procesorovej dosky
+ - nastavenie komunikácie medzi jednotlivými časťami procesorovej dosky
  - https://robu.in/product/wemos-mega-wifi-r3-atmega2560nodemcu-esp8266-32mb-memory-usb-ttl-ch340g-compatible-for-arduino-mega/
  - https://www.adrirobot.it/wemos_mega/wemos_mega.htm
  - https://media.readthedocs.org/pdf/arduino-esp8266/2.4.0-rc1/arduino-esp8266.pdf
@@ -23,3 +23,20 @@ some tests provided on WEMOS HW with esp8266-rtos-sdk framework using ATOM Platf
 | USB <-> ESP8266 (upload sketch) | --- | --- | --- | --- | ON | ON | ON | --- | 0 |
 | USB <-> ESP8266 (connect) | --- | --- | --- | --- | ON | ON | --- | --- | 0 |
 | USB <-> ATmega2560 <-> ESP8266 | ON | ON | ON | ON | --- | --- | --- | --- | 3 |
+
+## Osadenie dosky WEMOS MEGA WIFI R3
+
+ - ESP8266EX
+ 202018
+ TUBOPHTU89
+ 
+ - ATMEL
+ ATMEGA 2560
+ 16U-TW
+ 
+ - WINBOND
+ 25032JVSIQ
+ 1829
+ 
+ - OSC 26000
+ 
