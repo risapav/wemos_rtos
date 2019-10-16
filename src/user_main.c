@@ -1,9 +1,17 @@
 #include "esp_common.h"
+#include "esp_spiffs.h"
+#include "esp_system.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <lwip/api.h>
 #include "gpio.h"
 #include "uart.h"
+
+#include "spiffs.h"
+#include "spiffs_nucleus.h"
+
+#include "spi_flash.h"
 
 #include "configuration.h"
 
@@ -59,18 +67,18 @@ uint32 user_rf_cal_sector_set(void)
 
 void task_blink(void *ignore)
 {
-  GPIO_OUTPUT(14, 0);
+  //GPIO_OUTPUT(14, 0);
 
   //  gpio16_output_conf();
   while (true)
   {
-    GPIO_OUTPUT_SET(14, 1);
-    printf("\nblink %d", 0);
+    //GPIO_OUTPUT_SET(14, 1);
+    //printf("\nblink %d", 0);
     //    gpio16_output_set(0);
     vTaskDelay(500 / portTICK_RATE_MS);
     //    gpio16_output_set(1);
-    GPIO_OUTPUT_SET(14, 0);
-    //    printf("\nblink %d", 1);
+    //GPIO_OUTPUT_SET(14, 0);
+    //printf("\nblink %d", 1);
     vTaskDelay(500 / portTICK_RATE_MS);
   }
 
@@ -156,6 +164,43 @@ void httpd_task(void *pvParameters)
   }
 }
 
+/*****************************************************************************
+ *
+ *
+ * **************************************************************************/
+#define FS1_FLASH_ADDR 0x300000
+#define FS1_FLASH_SIZE (1024 * 1024)
+#define SECTOR_SIZE (4 * 1024)
+#define LOG_BLOCK SECTOR_SIZE
+#define LOG_PAGE (128)
+#define FD_BUF_SIZE (32 * 4)
+#define CACHE_BUF_SIZE (LOG_PAGE + 32) * 8
+
+void spiffs_fs1_init()
+{
+  /*
+SPIFFS_START_ADDRESS=0x300000
+SPIFFS_END_ADDRESS=0x3FB000
+SPIFFS_PAGE=256
+SPIFFS_BLOCK=8192
+SPIFFS_SIZE=$((SPIFFS_END_ADDRESS - SPIFFS_START_ADDRESS))
+*/
+  struct esp_spiffs_config config;
+  config.phys_size = FLASH_SIZE_32M_MAP_512_512;
+  config.phys_addr = FS1_FLASH_ADDR;
+  config.phys_erase_block = SECTOR_SIZE;
+  config.log_block_size = LOG_BLOCK;
+  config.log_page_size = LOG_PAGE;
+  config.fd_buf_size = FD_BUF_SIZE * 2;
+  config.cache_buf_size = CACHE_BUF_SIZE;
+
+  int ret = esp_spiffs_init(&config);
+  // need to initalize
+  ret = esp_spiffs_init(&config);
+  printf("\nCheck initialized: %d\n", ret);
+  esp_spiffs_deinit(0);
+}
+
 /******************************************************************************
  * FunctionName : user_init
  * Description  : entry of user application, init user function here
@@ -179,6 +224,11 @@ void user_init(void)
   printf(string_1, system_get_sdk_version());
   printf(string_2, system_get_chip_id());
   printf("\nflash map: %d\n", user_rf_cal_sector_set());
+  //spiffs init
+  printf("Initializing SPIFFS");
+  spiffs_fs1_init();
+  printf("SPIFFS unmounted");
+  //task create
   xTaskCreate(&task_blink, (signed char *)"startup", 2048, NULL, 1, NULL);
   xTaskCreate(&httpd_task, (signed char *)"http_server", 1024, NULL, 2, NULL);
 }
