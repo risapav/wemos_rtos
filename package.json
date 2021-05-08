@@ -23,7 +23,7 @@
     "backbone.marionette": "^4.0.0",
     "balanced-match": "^1.0.0",
     "jquery": "~3.5.0",
-    "underscore": "~1.9.1"
+    "underscore": "~1.12.1"
   },
   "devDependencies": {
     "css-loader": "^2.1.0",
